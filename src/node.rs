@@ -1,8 +1,9 @@
 extern crate rand;
 extern crate sha1;
 
-use rand::Rng;
 use std::fmt;
+use std::ops::BitXor;
+use rand::Rng;
 
 pub struct Node {
     pub id: NodeId
@@ -23,6 +24,18 @@ impl NodeId {
     }
 }
 
+impl Node {
+    pub fn new() -> Node {
+        Node {
+            id: NodeId::new()
+        }
+    }
+
+    pub fn distance(self, node: Node) -> NodeId {
+        self.id ^ node.id
+    }
+}
+
 impl fmt::Display for NodeId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut m = sha1::Sha1::new();
@@ -31,10 +44,15 @@ impl fmt::Display for NodeId {
     }
 }
 
-impl Node {
-    pub fn new() -> Node {
-        Node {
-            id: NodeId::new()
-        }
+impl BitXor<NodeId> for NodeId {
+    type Output = Self;
+
+    fn bitxor (self, rhs: Self) -> NodeId {
+        let dist = self.value.iter()
+            .zip(rhs.value.iter())
+            .map(|(byte1, byte2)| byte1 ^ byte2)
+            .collect::<Vec<u8>>();
+
+        NodeId { value: dist }
     }
 }
