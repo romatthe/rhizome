@@ -5,10 +5,14 @@ use std::fmt;
 use std::ops::BitXor;
 use rand::Rng;
 
+pub const HASH_SIZE: usize = 160;
+pub const HASH_SIZE_BYTES: usize = HASH_SIZE / 8;
+
 pub struct Node {
     pub id: NodeId
 }
 
+#[derive(Debug)]
 pub struct NodeId {
     pub value: Vec<u8>
 }
@@ -16,7 +20,7 @@ pub struct NodeId {
 impl NodeId {
     fn new() -> NodeId {
         let mut rng = rand::thread_rng();
-        let id = rng.gen_iter::<u8>().take(20).collect::<Vec<u8>>();
+        let id = rng.gen_iter::<u8>().take(HASH_SIZE_BYTES).collect::<Vec<u8>>();
 
         NodeId {
             value: id
