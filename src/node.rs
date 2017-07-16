@@ -1,15 +1,16 @@
 extern crate rand;
-extern crate sha1;
 
 use std::fmt;
 use std::ops::BitXor;
 use rand::Rng;
+use routingtable::RoutingTable;
 
 pub const HASH_SIZE: usize = 160;
 pub const HASH_SIZE_BYTES: usize = HASH_SIZE / 8;
 
 pub struct Node {
-    pub id: NodeId
+    pub id: NodeId,
+    pub routing: RoutingTable
 }
 
 #[derive(Debug)]
@@ -31,7 +32,8 @@ impl NodeId {
 impl Node {
     pub fn new() -> Node {
         Node {
-            id: NodeId::new()
+            id: NodeId::new(),
+            routing: RoutingTable::new()
         }
     }
 
@@ -42,9 +44,8 @@ impl Node {
 
 impl fmt::Display for NodeId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut m = sha1::Sha1::new();
-        m.update(self.value.as_ref());
-        write!(f, "{}", m.digest())
+        let fmt = &self.value.iter().fold(String::from(""), |acc, &byte| format!("{}{:08b}", &acc, &byte));
+        write!(f, "{}", fmt)
     }
 }
 

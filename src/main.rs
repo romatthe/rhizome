@@ -1,6 +1,5 @@
 extern crate arrayvec;
 extern crate rand;
-extern crate sha1;
 
 mod node;
 mod routingtable;
