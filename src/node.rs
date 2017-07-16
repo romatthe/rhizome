@@ -1,6 +1,7 @@
 extern crate rand;
 
 use std::fmt;
+use std::net::UdpSocket;
 use std::ops::BitXor;
 use rand::Rng;
 use routingtable::RoutingTable;
@@ -10,7 +11,9 @@ pub const HASH_SIZE_BYTES: usize = HASH_SIZE / 8;
 
 pub struct Node {
     pub id: NodeId,
-    pub routing: RoutingTable
+    pub routing: RoutingTable,
+    pub sock_in: UdpSocket,
+    pub sock_out: UdpSocket
 }
 
 #[derive(Debug)]
@@ -33,7 +36,9 @@ impl Node {
     pub fn new() -> Node {
         Node {
             id: NodeId::new(),
-            routing: RoutingTable::new()
+            routing: RoutingTable::new(),
+            sock_in: UdpSocket::bind(("0.0.0.0", 0)).expect("Failed to bind socket!"),
+            sock_out: UdpSocket::bind(("0.0.0.0", 0)).expect("Failed to bind socket!")
         }
     }
 
