@@ -16,7 +16,7 @@ pub struct Node {
     pub sock_out: UdpSocket
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct NodeId {
     pub value: Vec<u8>
 }
@@ -42,8 +42,8 @@ impl Node {
         }
     }
 
-    pub fn distance(self, node: Node) -> NodeId {
-        self.id ^ node.id
+    pub fn distance(self, node: &Node) -> NodeId {
+        self.id ^ &node.id
     }
 }
 
@@ -54,10 +54,10 @@ impl fmt::Display for NodeId {
     }
 }
 
-impl BitXor<NodeId> for NodeId {
+impl <'a> BitXor<&'a NodeId> for NodeId {
     type Output = Self;
 
-    fn bitxor (self, rhs: Self) -> NodeId {
+    fn bitxor (self, rhs: &Self) -> NodeId {
         let dist = self.value.iter()
             .zip(rhs.value.iter())
             .map(|(byte1, byte2)| byte1 ^ byte2)
