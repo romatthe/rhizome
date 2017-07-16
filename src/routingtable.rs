@@ -1,15 +1,31 @@
-use std::iter;
+use arrayvec::ArrayVec;
 use node::{NodeId, HASH_SIZE};
 
 pub struct RoutingTable {
-    pub buckets: [Vec<NodeId>; HASH_SIZE]
+    buckets: ArrayVec<[Bucket; HASH_SIZE]>
+}
+
+#[derive(Debug)]
+pub struct Bucket {
+    pub nodes: Vec<NodeId>
 }
 
 impl RoutingTable {
     pub fn new() -> RoutingTable {
-        let mut new_buckets: Vec<Vec<NodeId>> = Vec::with_capacity(HASH_SIZE);
-        new_buckets.iter().map(|vec| vec![]).collect();
+        let mut new_buckets = ArrayVec::<[Bucket; HASH_SIZE]>::new();
+        for _ in 0..HASH_SIZE {
+            new_buckets.push(Bucket::new());
+        }
+        RoutingTable { buckets: new_buckets }
+    }
 
-        RoutingTable { buckets: new_buckets.as_ref() }
+    pub fn bucket_at(&self, index: usize) -> &Bucket {
+        &self.buckets.as_slice()[index]
+    }
+}
+
+impl Bucket {
+    pub fn new() -> Bucket {
+        Bucket { nodes: vec![] }
     }
 }

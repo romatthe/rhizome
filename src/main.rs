@@ -1,3 +1,4 @@
+extern crate arrayvec;
 extern crate rand;
 extern crate sha1;
 
@@ -14,6 +15,6 @@ fn main() {
     println!("New Node id acquired: {}", new_node2.id);
     println!("Distance betweeen two nodes: {}", new_node.distance(new_node2));
 
-    println!("New routintable: {:?}", RoutingTable::new().buckets.as_ref());
+    println!("New routintable: {:?}", RoutingTable::new().bucket_at(0));
 }
 

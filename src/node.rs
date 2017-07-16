@@ -18,7 +18,7 @@ pub struct NodeId {
 }
 
 impl NodeId {
-    fn new() -> NodeId {
+    pub fn new() -> NodeId {
         let mut rng = rand::thread_rng();
         let id = rng.gen_iter::<u8>().take(HASH_SIZE_BYTES).collect::<Vec<u8>>();
 
