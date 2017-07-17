@@ -4,10 +4,10 @@ use std::fmt;
 use std::io::Cursor;
 use std::net::{SocketAddr, Ipv4Addr, Ipv6Addr, UdpSocket};
 use std::ops::BitXor;
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
 use rand::Rng;
 use hash::HASH_SIZE_BYTES;
-use routingtable::RoutingTable;
+use routing::RoutingTable;
 
 pub const UDP_SOCKET_BUFFER_BYTES: u64 = 65508;
 
@@ -39,8 +39,8 @@ impl Node {
         }
     }
 
-    pub fn distance(self, node: &Node) -> NodeId {
-        self.contact.id ^ &node.contact.id
+    pub fn distance(&self, node: &Node) -> Vec<u8> {
+        &self.contact.id ^ &node.contact.id
     }
 }
 
@@ -60,7 +60,7 @@ impl NodeId {
 impl fmt::Display for NodeId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut rdr = Cursor::new(&self.value);
-        write!(f, "{:?}", rdr.read_u16::<BigEndian>().unwrap())
+        write!(f, "{:?}", rdr.read_u64::<BigEndian>().unwrap())
     }
 }
 
@@ -71,15 +71,13 @@ impl fmt::Binary for NodeId {
     }
 }
 
-impl <'a> BitXor<&'a NodeId> for NodeId {
-    type Output = Self;
+impl <'a> BitXor<&'a NodeId> for &'a NodeId {
+    type Output = Vec<u8>;
 
-    fn bitxor (self, rhs: &Self) -> NodeId {
-        let dist = self.value.iter()
+    fn bitxor (self, rhs: Self) -> Vec<u8> {
+        self.value.iter()
             .zip(rhs.value.iter())
             .map(|(byte1, byte2)| byte1 ^ byte2)
-            .collect::<Vec<u8>>();
-
-        NodeId { value: dist }
+            .collect::<Vec<u8>>()
     }
 }

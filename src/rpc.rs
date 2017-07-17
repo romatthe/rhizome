@@ -18,9 +18,8 @@ impl Message {
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub enum MessagePayload {
     Ping,
-    PingResponse,
+    Pong,
     Store,
-    StoreResponse,
     FindNode,
     FindNodeResponse,
     FindValue,

@@ -2,6 +2,8 @@ use arrayvec::ArrayVec;
 use hash::HASH_SIZE;
 use node::{NodeId};
 
+pub const MAX_BUCKET_SIZE: u8 = 20;
+
 pub struct RoutingTable {
     buckets: ArrayVec<[Bucket; HASH_SIZE]>
 }
@@ -22,6 +24,10 @@ impl RoutingTable {
 
     pub fn bucket_at(&self, index: usize) -> &Bucket {
         &self.buckets.as_slice()[index]
+    }
+
+    pub fn update(&self, node: NodeId) {
+
     }
 }
 
