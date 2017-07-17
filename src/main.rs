@@ -17,15 +17,15 @@ use rpc::{MessagePayload, Message};
 
 fn main() {
     let new_node = Node::new();
-    println!("New Node id acquired: {}", new_node.id);
+    println!("New Node id acquired: {}", new_node.contact.id);
     let new_node2 = Node::new();
-    println!("New Node id acquired: {}", new_node2.id);
+    println!("New Node id acquired: {}", new_node2.contact.id);
     println!("Distance between two nodes: {:b}", new_node.distance(&new_node2));
 
     println!("New routingtable: {:?}", RoutingTable::new().bucket_at(0));
 
     let payload: MessagePayload = MessagePayload::Ping;
-    let message: Message = Message { payload: payload, origin: new_node2.id };
+    let message: Message = Message { payload: payload, origin: new_node2.contact.id };
 
     println!("New Rpc message - Deserialized: {:?}", message);
     println!("New Rpc message - Serialized: {:?}", message.serialize());

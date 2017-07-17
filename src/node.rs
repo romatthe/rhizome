@@ -2,7 +2,7 @@ extern crate rand;
 
 use std::fmt;
 use std::io::Cursor;
-use std::net::UdpSocket;
+use std::net::{SocketAddr, Ipv4Addr, Ipv6Addr, UdpSocket};
 use std::ops::BitXor;
 use byteorder::{BigEndian, ReadBytesExt};
 use rand::Rng;
@@ -12,7 +12,7 @@ use routingtable::RoutingTable;
 pub const UDP_SOCKET_BUFFER_BYTES: u64 = 65508;
 
 pub struct Node {
-    pub id: NodeId,
+    pub contact: Contact,
     pub routing: RoutingTable,
     pub sock_in: UdpSocket,
     pub sock_out: UdpSocket
@@ -21,6 +21,27 @@ pub struct Node {
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct NodeId {
     pub value: Vec<u8>
+}
+
+pub struct Contact {
+    pub id: NodeId,
+    pub ip: SocketAddr,
+}
+
+impl Node {
+    pub fn new() -> Node {
+        let ip = "0.0.0.0:0".parse().unwrap();
+        Node {
+            contact: Contact { id: NodeId::new(), ip: ip },
+            routing: RoutingTable::new(),
+            sock_in: UdpSocket::bind(ip).expect("Failed to bind socket!"),
+            sock_out: UdpSocket::bind(ip).expect("Failed to bind socket!")
+        }
+    }
+
+    pub fn distance(self, node: &Node) -> NodeId {
+        self.contact.id ^ &node.contact.id
+    }
 }
 
 impl NodeId {
@@ -33,21 +54,6 @@ impl NodeId {
 
     pub fn from_bytes(bytes: &[u8; 20]) -> NodeId {
         NodeId { value: bytes.to_vec() }
-    }
-}
-
-impl Node {
-    pub fn new() -> Node {
-        Node {
-            id: NodeId::new(),
-            routing: RoutingTable::new(),
-            sock_in: UdpSocket::bind(("0.0.0.0", 0)).expect("Failed to bind socket!"),
-            sock_out: UdpSocket::bind(("0.0.0.0", 0)).expect("Failed to bind socket!")
-        }
-    }
-
-    pub fn distance(self, node: &Node) -> NodeId {
-        self.id ^ &node.id
     }
 }
 
