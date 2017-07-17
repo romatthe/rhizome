@@ -1,21 +1,22 @@
 extern crate bincode;
 
 use node::NodeId;
+use node::UDP_SOCKET_BUFFER_BYTES;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-pub struct RpcMessage {
-    pub payload: Rpc,
+pub struct Message {
+    pub payload: MessagePayload,
     pub origin: NodeId
 }
 
-impl RpcMessage {
+impl Message {
     pub fn serialize(&self) -> Vec<u8> {
-        bincode::serialize(&self, bincode::Bounded(2048)).unwrap() // Fix the size limit to the UDP datagram size
+        bincode::serialize(&self, bincode::Bounded(UDP_SOCKET_BUFFER_BYTES)).unwrap()
     }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-pub enum Rpc {
+pub enum MessagePayload {
     Ping,
     PingResponse,
     Store,

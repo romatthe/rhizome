@@ -1,5 +1,6 @@
 use arrayvec::ArrayVec;
-use node::{NodeId, HASH_SIZE};
+use hash::HASH_SIZE;
+use node::{NodeId};
 
 pub struct RoutingTable {
     buckets: ArrayVec<[Bucket; HASH_SIZE]>

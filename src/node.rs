@@ -1,13 +1,15 @@
 extern crate rand;
 
 use std::fmt;
+use std::io::Cursor;
 use std::net::UdpSocket;
 use std::ops::BitXor;
+use byteorder::{BigEndian, ReadBytesExt};
 use rand::Rng;
+use hash::HASH_SIZE_BYTES;
 use routingtable::RoutingTable;
 
-pub const HASH_SIZE: usize = 160;
-pub const HASH_SIZE_BYTES: usize = HASH_SIZE / 8;
+pub const UDP_SOCKET_BUFFER_BYTES: u64 = 65508;
 
 pub struct Node {
     pub id: NodeId,
@@ -26,9 +28,11 @@ impl NodeId {
         let mut rng = rand::thread_rng();
         let id = rng.gen_iter::<u8>().take(HASH_SIZE_BYTES).collect::<Vec<u8>>();
 
-        NodeId {
-            value: id
-        }
+        NodeId { value: id }
+    }
+
+    pub fn from_bytes(bytes: &[u8; 20]) -> NodeId {
+        NodeId { value: bytes.to_vec() }
     }
 }
 
@@ -48,6 +52,13 @@ impl Node {
 }
 
 impl fmt::Display for NodeId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut rdr = Cursor::new(&self.value);
+        write!(f, "{:?}", rdr.read_u16::<BigEndian>().unwrap())
+    }
+}
+
+impl fmt::Binary for NodeId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let fmt = &self.value.iter().fold(String::from(""), |acc, &byte| format!("{}{:08b}", &acc, &byte));
         write!(f, "{}", fmt)
