@@ -8,7 +8,6 @@ extern crate sha1;
 
 mod hash;
 mod node;
-mod nodeid;
 mod routing;
 mod rpc;
 

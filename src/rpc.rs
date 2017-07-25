@@ -1,7 +1,7 @@
 extern crate bincode;
 
 use hash::KeyHash;
-use nodeid::NodeId;
+use node::NodeId;
 use node::UDP_SOCKET_BUFFER_BYTES;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]

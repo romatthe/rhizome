@@ -1,6 +1,6 @@
 use arrayvec::ArrayVec;
 use hash::HASH_SIZE;
-use nodeid::{NodeId};
+use node::NodeId;
 
 pub const MAX_BUCKET_SIZE: u8 = 20;
 
