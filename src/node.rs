@@ -1,12 +1,8 @@
 extern crate rand;
 
-use std::fmt;
-use std::io::Cursor;
 use std::net::{SocketAddr, Ipv4Addr, Ipv6Addr, UdpSocket};
-use std::ops::BitXor;
-use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
-use rand::Rng;
-use hash::HASH_SIZE_BYTES;
+use hash::HASH_SIZE;
+use nodeid::NodeId;
 use routing::RoutingTable;
 
 pub const UDP_SOCKET_BUFFER_BYTES: u64 = 65508;
@@ -16,11 +12,6 @@ pub struct Node {
     pub routing: RoutingTable,
     pub sock_in: UdpSocket,
     pub sock_out: UdpSocket
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
-pub struct NodeId {
-    pub value: Vec<u8>
 }
 
 pub struct Contact {
@@ -39,45 +30,13 @@ impl Node {
         }
     }
 
-    pub fn distance(&self, node: &Node) -> Vec<u8> {
+    pub fn distance(&self, node: &Node) -> NodeId {
         &self.contact.id ^ &node.contact.id
     }
-}
 
-impl NodeId {
-    pub fn new() -> NodeId {
-        let mut rng = rand::thread_rng();
-        let id = rng.gen_iter::<u8>().take(HASH_SIZE_BYTES).collect::<Vec<u8>>();
-
-        NodeId { value: id }
-    }
-
-    pub fn from_bytes(bytes: &[u8; 20]) -> NodeId {
-        NodeId { value: bytes.to_vec() }
-    }
-}
-
-impl fmt::Display for NodeId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut rdr = Cursor::new(&self.value);
-        write!(f, "{:?}", rdr.read_u64::<BigEndian>().unwrap())
-    }
-}
-
-impl fmt::Binary for NodeId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let fmt = &self.value.iter().fold(String::from(""), |acc, &byte| format!("{}{:08b}", &acc, &byte));
-        write!(f, "{}", fmt)
-    }
-}
-
-impl <'a> BitXor<&'a NodeId> for &'a NodeId {
-    type Output = Vec<u8>;
-
-    fn bitxor (self, rhs: Self) -> Vec<u8> {
-        self.value.iter()
-            .zip(rhs.value.iter())
-            .map(|(byte1, byte2)| byte1 ^ byte2)
-            .collect::<Vec<u8>>()
+    pub fn distance2(&self, node: &Node) -> u32 {
+//        return ID_LENGTH - this.xor(to).getFirstSetBitIndex();
+//        let zeroes = self.distance(node).count_leading_zeroes() as usize;
+        (HASH_SIZE as u32) - self.distance(node).count_leading_zeroes()
     }
 }

@@ -1,6 +1,7 @@
 extern crate bincode;
 
-use node::NodeId;
+use hash::KeyHash;
+use nodeid::NodeId;
 use node::UDP_SOCKET_BUFFER_BYTES;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -20,6 +21,7 @@ pub enum MessagePayload {
     Ping,
     Pong,
     Store,
+    StoreResponse,
     FindNode,
     FindNodeResponse,
     FindValue,
@@ -27,7 +29,8 @@ pub enum MessagePayload {
 }
 
 pub struct StoreMessage {
-
+    pub key: KeyHash,
+    pub data: Vec<u8>
 }
 
 pub struct StoreResponseMessage {
@@ -43,7 +46,7 @@ pub struct FindNodeResponseMessage {
 }
 
 pub struct FindValueMessage {
-
+    pub key: KeyHash
 }
 
 pub struct FindValueResponseMessage {

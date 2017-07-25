@@ -8,6 +8,7 @@ extern crate sha1;
 
 mod hash;
 mod node;
+mod nodeid;
 mod routing;
 mod rpc;
 
@@ -21,6 +22,7 @@ fn main() {
     let new_node2 = Node::new();
     println!("Node2: {:b}", new_node2.contact.id);
     println!("Diff:  {:?}", &new_node.distance(&new_node2));
+    println!("Diff2:  {}", &new_node.distance2(&new_node2));
     println!("Distance between two nodes: {:?}", &new_node.distance(&new_node2));
 
     println!("New routingtable: {:?}", RoutingTable::new().bucket_at(0));
