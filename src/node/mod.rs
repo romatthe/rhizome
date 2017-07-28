@@ -6,7 +6,7 @@ pub use self::node_id::NodeId;
 
 use std::net::{SocketAddr, Ipv4Addr, Ipv6Addr, UdpSocket};
 use hash::HASH_SIZE;
-use routing::RoutingTable;
+use routing::{Contact, RoutingTable};
 
 pub const UDP_SOCKET_BUFFER_BYTES: u64 = 65508;
 
@@ -15,11 +15,6 @@ pub struct Node {
     pub routing: RoutingTable,
     pub sock_in: UdpSocket,
     pub sock_out: UdpSocket
-}
-
-pub struct Contact {
-    pub id: NodeId,
-    pub ip: SocketAddr,
 }
 
 impl Node {
@@ -34,8 +29,6 @@ impl Node {
     }
 
     pub fn distance(&self, node: &Node) -> u32 {
-        //        return ID_LENGTH - this.xor(to).getFirstSetBitIndex();
-        //        let zeroes = self.distance(node).count_leading_zeroes() as usize;
         let binary_distance = &self.contact.id ^ &node.contact.id;
         (HASH_SIZE as u32) - binary_distance.count_leading_zeroes()
     }
