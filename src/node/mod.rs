@@ -33,13 +33,10 @@ impl Node {
         }
     }
 
-    pub fn distance(&self, node: &Node) -> NodeId {
-        &self.contact.id ^ &node.contact.id
-    }
-
-    pub fn distance2(&self, node: &Node) -> u32 {
+    pub fn distance(&self, node: &Node) -> u32 {
         //        return ID_LENGTH - this.xor(to).getFirstSetBitIndex();
         //        let zeroes = self.distance(node).count_leading_zeroes() as usize;
-        (HASH_SIZE as u32) - self.distance(node).count_leading_zeroes()
+        let binary_distance = &self.contact.id ^ &node.contact.id;
+        (HASH_SIZE as u32) - binary_distance.count_leading_zeroes()
     }
 }
