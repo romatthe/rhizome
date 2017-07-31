@@ -5,6 +5,7 @@ mod node_id;
 pub use self::node_id::NodeId;
 
 use std::net::{SocketAddr, Ipv4Addr, Ipv6Addr, UdpSocket};
+use std::time::SystemTime;
 use hash::HASH_SIZE;
 use routing::{Contact, RoutingTable};
 
@@ -21,7 +22,7 @@ impl Node {
     pub fn new() -> Node {
         let ip = "0.0.0.0:0".parse().unwrap();
         Node {
-            contact: Contact { id: NodeId::new(), ip: ip },
+            contact: Contact { id: NodeId::new(), ip: ip, last_seen: SystemTime::now() },
             routing: RoutingTable::new(),
             sock_in: UdpSocket::bind(ip).expect("Failed to bind socket!"),
             sock_out: UdpSocket::bind(ip).expect("Failed to bind socket!")
